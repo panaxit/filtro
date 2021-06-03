@@ -1,0 +1,3 @@
+[submodule "xdom"]
+	path = xdom
+	url = https://uriel_panax@bitbucket.org/uriel_panax/xdom.git

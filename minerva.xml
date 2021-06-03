@@ -1,0 +1,18 @@
+﻿<?xml-stylesheet type="text/xsl" href="cuestionario.xslt" target="body"?>
+<preguntas xmlns:state="http://panax.io/state" xmlns:custom="http://panax.io/custom" custom:email="ivanna.gomez.gu@colegiominerva.edu.mx" custom:code="47E2D16F85521232BDA2E72E4111D457">
+  <sintomatologia>
+    <opcion state:checked="1">Fiebre alta (igual o mayor a 38°C)</opcion>
+    <opcion state:checked="1">Dolor de cabeza</opcion>
+    <opcion state:checked="1">Dificultad para respirar</opcion>
+    <opcion state:checked="0">Tos seca</opcion>
+    <opcion state:checked="0">Tos con flema</opcion>
+    <opcion state:checked="0">Dolor muscular</opcion>
+    <opcion state:checked="1">Dolor de articulaciones</opcion>
+    <opcion state:checked="1">Ardor o dolor de garganta</opcion>
+    <opcion state:checked="1">Conjuntivitis (picor y ardor en los ojos)</opcion>
+    <opcion state:checked="0">Pérdida del sentido del olfato (anosmia)</opcion>
+    <opcion state:checked="0">Disminución en el sentido del gusto (hipogeusia)</opcion>
+    <opcion state:checked="1">Ha ido a consulta por estos síntomas</opcion>
+    <opcion state:checked="1">Recibió tratamiento</opcion>
+  </sintomatologia>
+</preguntas>
