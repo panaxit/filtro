@@ -17,6 +17,7 @@
   },
   "sources": {
     "#":  "#minerva",
-    "#minerva": cuestionario.load
+    "#minerva": cuestionario.load,
+    "#pricing":  "pricing.xml"
   }
 }

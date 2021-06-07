@@ -305,7 +305,7 @@ exclude-result-prefixes="#default"
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <div class="carousel-item" style="background-color: #6c757d">
+    <div class="carousel-item" style="background-color: #140c5b">
       <xsl:if test="position()=../@state:active or position()=1 and not(../@state:active)">
         <xsl:attribute name="class">carousel-item active</xsl:attribute>
         <xsl:attribute name="aria-current">true</xsl:attribute>
@@ -313,7 +313,10 @@ exclude-result-prefixes="#default"
       <div class="row flex-nowrap">
         <div class="col"></div>
         <div class="col-5 text-end">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 7)+1}, !{(position() mod 7)}, true);}})" data-bs-target="#myCarousel" data-bs-slide="next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 7)+1}, !{(position() mod 7)}, true);}})" data-bs-target="#myCarousel">
+            <xsl:if test="not(position()=last())">
+              <xsl:attribute name="data-bs-slide">next</xsl:attribute>
+            </xsl:if>
             <xsl:if test="@state:checked='0'">
               <xsl:attribute name="class">bi bi-x-circle text-success</xsl:attribute>
             </xsl:if>
@@ -322,7 +325,10 @@ exclude-result-prefixes="#default"
           </svg>
         </div>
         <div class="col-5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 7)+1}, true);}})" data-bs-target="#myCarousel" data-bs-slide="next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 7)+1}, true);}})" data-bs-target="#myCarousel">
+            <xsl:if test="not(position()=last())">
+              <xsl:attribute name="data-bs-slide">next</xsl:attribute>
+            </xsl:if>
             <xsl:if test="@state:checked='1'">
               <xsl:attribute name="class">bi bi-x-circle text-danger</xsl:attribute>
             </xsl:if>
