@@ -32,11 +32,21 @@ exclude-result-prefixes="#default"
               <hr class="my-4"/>
               <xsl:choose>
                 <xsl:when test="@custom:code">
-                  <div class="text-center">
-                    <img src="qr/colegiominerva.edu.mx/{@custom:code}.png" class="img-fluid" alt="Responsive image"/>
-                  </div>
+                  <xsl:choose>
+                    <xsl:when test="*/*[@state:checked='1']">
+                      <div class="alert alert-danger text-center" role="alert">
+                        Favor de quedarse en casa.
+                      </div>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <div class="text-center">
+                        <img src="qr/colegiominerva.edu.mx/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo institucional (nombre.apellido.ap@colegiominerva.edu.mx) para ver el código QR"/>
+                        <br/>
+                      </div>
+                    </xsl:otherwise>
+                  </xsl:choose>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <xsl:attribute name="onclick">cuestionario.closeSession()</xsl:attribute>
+                    <xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
                 </xsl:when>
@@ -208,6 +218,7 @@ exclude-result-prefixes="#default"
           }
         }]]>
       </style>
+      <script>console.log('inicializando')</script>
       <main class="form-signin">
         <form>
           <img class="mb-4" src="assets/minerva.png" alt="" width="72"/>
@@ -228,7 +239,9 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',document.querySelector('#floatingEmail').value, true)}});">Continuar</button>
+          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; 'colegiominerva.edu.mx'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.sources['#minerva']">
+            Continuar
+          </button>
           <p class="mt-5 mb-3 text-muted">2021 &#169; Panax</p>
         </form>
       </main>
@@ -313,7 +326,7 @@ exclude-result-prefixes="#default"
       <div class="row flex-nowrap">
         <div class="col"></div>
         <div class="col-5 text-end">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 7)+1}, !{(position() mod 7)}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 9)+1}, !{(position() mod 9)}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>
@@ -325,7 +338,7 @@ exclude-result-prefixes="#default"
           </svg>
         </div>
         <div class="col-5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 7)+1}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 9)+1}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>
@@ -470,11 +483,11 @@ body {
       <div class="carousel-inner">
         <xsl:apply-templates select="opcion"/>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', eval({translate(string(($active mod 7)-1),'-0','  ')}) || 1)}})">
+      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', eval({translate(string(($active mod 9)-1),'-0','  ')}) || 1)}})">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">No</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', {($active mod 7)+1})}})">
+      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', {($active mod 9)+1})}})">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Sí</span>
       </button>

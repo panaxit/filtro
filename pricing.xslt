@@ -86,7 +86,7 @@ exclude-result-prefixes="#default"
                 </div>
                 <div class="card-body">
                   <h1 class="card-title pricing-card-title">
-                    $12,000.00 <small class="text-muted fw-light">MXN/pago único</small>
+                    $12,000.00 <small class="text-muted fw-light">MXN/dominio</small>
                   </h1>
                   <ul class="list-unstyled mt-3 mb-4">
                     <li>Notificaciones en telegram</li>
