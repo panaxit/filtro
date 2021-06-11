@@ -10,6 +10,11 @@ exclude-result-prefixes="#default"
   <!--<xsl:key name="respuesta" match="@sintomatologia" use="substring(@sintomatologia,1,10)"/>-->
   <xsl:template match="reporte">
     <main>
+      <div class="row p1">
+        <div class="col text-center"><img class="mb-4" src="assets/minerva.png" alt="" width="72"/></div>
+        <div class="col-10 text-center"><h1>BITÁCORA DE REGISTRO</h1></div>
+        <div class="col text-start"><button class="btn btn-danger" onclick="xdom.session.logout();">Cerrar sesión</button></div>
+      </div>
       <table class="table table-bordered table-striped">
         <xsl:apply-templates select="preguntas"/>
         <xsl:apply-templates select="respuestas"/>
@@ -66,7 +71,7 @@ exclude-result-prefixes="#default"
   <xsl:template name="respuesta">
     <xsl:param name="respuestas"/>
     <xsl:if test="$respuestas!=''">
-      <td>
+      <td class="text-center">
         <xsl:choose>
           <xsl:when test="substring($respuestas,1,1)=0">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x text-success" viewBox="0 0 16 16">
@@ -81,8 +86,8 @@ exclude-result-prefixes="#default"
         </xsl:choose>
       </td>
       <xsl:call-template name="respuesta">
-      <xsl:with-param name="respuestas" select="substring($respuestas,2)"/>
-    </xsl:call-template>
+        <xsl:with-param name="respuestas" select="substring($respuestas,2)"/>
+      </xsl:call-template>
     </xsl:if>
   </xsl:template>
 
