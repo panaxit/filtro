@@ -6,6 +6,27 @@ xmlns:state="http://panax.io/state"
 xmlns:custom="http://panax.io/custom"
 exclude-result-prefixes="#default"
 >
+  <xsl:key name="isGeneric" match="*[@custom:code='03E95B82C65C684026F2D7CA40A193DD']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='147742534F68CBE79D45A05459863A38']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='2D088A1D090097F62ABD2C9D5DC3F7A1']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='33943D621F7D6F6066F60EA76A27FCBE']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='411B61CF6B00B7DD908FF0DB285D05EE']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='4237705FC536B111AE489221BAE985EC']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='4452BD783FCA6ED27A829B6783B7F0FF']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='4FB6ED8A377E90B832823F5D0B595C07']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='5327950084B17716F54392D83A6525AB']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='6ED4F0A91C15D5355ECE78D203EA5D83']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='76B902A49F66D859493F9F3D171ED95E']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='7C19175AB16493EADCDB4F02E268DE89']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='7D3E7766E47487AD00818659463505B5']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='7D54D347EA3AB836F3EE683CBD2F46A7']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='8B39C2A472ACAD75EEBD0F1D7D4415BF']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='9B1842D45902F978B0E1E9BE632D22EA']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='AF0C8FB04A1C1996351238935F07ACB2']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='F15FA8D092185E7A25B3CC6DBD8B5616']" use="@custom:code"/>
+  <xsl:key name="isGeneric" match="*[@custom:code='FD87F7733D4FBDCDF58A0D46545D7E82']" use="@custom:code"/>
+    
+  <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@colegiominerva.edu.mx')]" use="true()"/>
   <xsl:key name="missing" match="preguntas/sintomatologia/opcion[not(@state:checked)]" use="generate-id(../..)"/>
   <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
@@ -46,7 +67,8 @@ exclude-result-prefixes="#default"
                     </xsl:otherwise>
                   </xsl:choose>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>
+                    <!--<xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
+                    <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
                 </xsl:when>
@@ -65,7 +87,7 @@ exclude-result-prefixes="#default"
                   <br/>
                   <br/>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <xsl:attribute name="onclick">cuestionario.closeSession()</xsl:attribute>
+                    <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
                 </xsl:otherwise>
@@ -116,15 +138,22 @@ exclude-result-prefixes="#default"
 
         <div class="row g-5">
           <div class="col-12">
-            <h1 class="mb-3 text-center">
-              <xsl:value-of select="@custom:email"/>
-            </h1>
-            <h1 class="mb-3 text-center text-primary">
-              <xsl:apply-templates select="@custom:date"/>
-            </h1>
-            <h2 class="mb-3 text-center">
-              <xsl:apply-templates select="@custom:result"/>
-            </h2>
+            <xsl:choose>
+            <xsl:when test="key('isGeneric', @custom:code)">
+              <h1 class="mb-3 text-center">Código válido únicamente hasta el 14 de Junio</h1>
+            </xsl:when>
+              <xsl:otherwise>
+                <h1 class="mb-3 text-center">
+                  <xsl:value-of select="@custom:email"/>
+                </h1>
+                <h1 class="mb-3 text-center text-primary">
+                  <xsl:apply-templates select="@custom:date"/>
+                </h1>
+                <h2 class="mb-3 text-center">
+                  <xsl:apply-templates select="@custom:result"/>
+                </h2>
+              </xsl:otherwise>
+            </xsl:choose>
             <div class="row text-center">
               <div class="col-4"/>
               <div class="col-4">
@@ -160,7 +189,7 @@ exclude-result-prefixes="#default"
     </div>
   </xsl:template>
 
-  <xsl:template match="preguntas[not(string(@custom:email)!='')]">
+  <xsl:template match="preguntas[not(key('valid_email',true()))]">
     <div class="text-center">
       <style>
         <![CDATA[
@@ -179,7 +208,7 @@ exclude-result-prefixes="#default"
 
         .form-signin {
           width: 100%;
-          max-width: 330px;
+          max-width: 400px;
           padding: 15px;
           margin: auto;
         }
@@ -220,12 +249,18 @@ exclude-result-prefixes="#default"
       </style>
       <script>console.log('inicializando')</script>
       <main class="form-signin">
-        <form>
+        <form class="needs-validation" novalidate="">
           <img class="mb-4" src="assets/minerva.png" alt="" width="72"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Salud</h1>
 
+        <xsl:variable name="invalid-email"><xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if></xsl:variable>
           <div class="form-floating">
-            <input type="email" class="form-control" id="floatingEmail" placeholder="name@example.com" width="" xo-target="{@x:id}" />
+            <input type="email" class="form-control {$invalid-email}" id="floatingEmail" placeholder="name@example.com" value="{@custom:email}" width="" xo-target="{@x:id}" onfocus="this.value=''"/>
+          <xsl:if test="string(@custom:email)!=''">
+            <div class="invalid-feedback">
+              Por favor introduzca un nombre de usuario válido.
+            </div>
+          </xsl:if>
             <label for="floatingEmail">Correo institucional</label>
           </div>
           <br/>
@@ -247,7 +282,6 @@ exclude-result-prefixes="#default"
       </main>
     </div>
   </xsl:template>
-
 
   <xsl:template match="preguntas/*">
     <div class="container">
