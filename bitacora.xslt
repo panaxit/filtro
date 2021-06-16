@@ -12,7 +12,7 @@ exclude-result-prefixes="#default"
     <main>
       <div class="row p1">
         <div class="col text-center"><img class="mb-4" src="assets/minerva.png" alt="" width="72"/></div>
-        <div class="col-10 text-center"><h1>BITÁCORA DE REGISTRO</h1></div>
+        <div class="col-10 text-center"><h1>BITÁCORA DE ESCANEO</h1></div>
         <div class="col text-start"><button class="btn btn-danger" onclick="xdom.session.logout();">Cerrar sesión</button></div>
       </div>
       <table class="table table-bordered table-striped">

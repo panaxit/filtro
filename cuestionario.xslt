@@ -123,7 +123,7 @@ exclude-result-prefixes="#default"
     <xsl:text>:</xsl:text>
     <xsl:value-of select="substring(.,13,2)"/>
     <xsl:choose>
-      <xsl:when test="substring(.,11,2)&gt;=12"> P.M.</xsl:when>
+      <xsl:when test="substring(.,9,2)&gt;=12"> P.M.</xsl:when>
       <xsl:otherwise> A.M.</xsl:otherwise>
     </xsl:choose>
   </xsl:template>
