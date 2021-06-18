@@ -12,7 +12,7 @@ cuestionario.getQR = function () {
     });
 }
 
-cuestionario.load = function () {
+cuestionario.load = async function () {
     let codigo = location.search.replace(/^\?uid=/, '');
     if (codigo) {
         xdom.session.loadSession(codigo);
@@ -42,4 +42,22 @@ cuestionario.closeSession = function () {
 
 function getCurrentSlide() {
     return parseInt(document.querySelector('#myCarousel .carousel-indicators .active').getAttribute('data-bs-slide-to')) + 1
+}
+
+function toIsoString(date) {
+    var tzo = -date.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function (num) {
+            var norm = Math.floor(Math.abs(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+
+    return date.getFullYear() +
+        '-' + pad(date.getMonth() + 1) +
+        '-' + pad(date.getDate()) +
+        'T' + pad(date.getHours()) +
+        ':' + pad(date.getMinutes()) +
+        ':' + pad(date.getSeconds()) +
+        dif + pad(tzo / 60) +
+        ':' + pad(tzo % 60);
 }

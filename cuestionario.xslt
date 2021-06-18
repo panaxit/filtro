@@ -2,6 +2,7 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:x="http://panax.io/xdom"
+xmlns:js="http://panax.io/xdom/javascript"
 xmlns:state="http://panax.io/state"
 xmlns:custom="http://panax.io/custom"
 exclude-result-prefixes="#default"
@@ -25,12 +26,14 @@ exclude-result-prefixes="#default"
   <xsl:key name="isGeneric" match="*[@custom:code='AF0C8FB04A1C1996351238935F07ACB2']" use="@custom:code"/>
   <xsl:key name="isGeneric" match="*[@custom:code='F15FA8D092185E7A25B3CC6DBD8B5616']" use="@custom:code"/>
   <xsl:key name="isGeneric" match="*[@custom:code='FD87F7733D4FBDCDF58A0D46545D7E82']" use="@custom:code"/>
-    
+
   <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@colegiominerva.edu.mx')]" use="true()"/>
   <xsl:key name="missing" match="preguntas/sintomatologia/opcion[not(@state:checked)]" use="generate-id(../..)"/>
   <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="expirado" match="@custom:date[.='Positivo']" use="generate-id(/*)" />
+
+  <xsl:param name="js:fecha_actual"><![CDATA[toIsoString(new Date()).replace(/[^\d]/gi,'').substr(0,14)]]></xsl:param>
   <xsl:template match="preguntas">
     <div class="container">
       <main>
@@ -63,6 +66,7 @@ exclude-result-prefixes="#default"
                       <div class="text-center">
                         <img src="qr/colegiominerva.edu.mx/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo institucional (nombre.apellido.ap@colegiominerva.edu.mx) para ver el código QR"/>
                         <br/>
+                        <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
                       </div>
                     </xsl:otherwise>
                   </xsl:choose>
@@ -122,13 +126,27 @@ exclude-result-prefixes="#default"
     <xsl:value-of select="substring(.,11,2)"/>
     <xsl:text>:</xsl:text>
     <xsl:value-of select="substring(.,13,2)"/>
-    <xsl:choose>
+    <xsl:text> Hrs.</xsl:text>
+    <!--<xsl:choose>
       <xsl:when test="substring(.,9,2)&gt;=12"> P.M.</xsl:when>
       <xsl:otherwise> A.M.</xsl:otherwise>
-    </xsl:choose>
+    </xsl:choose>-->
   </xsl:template>
 
   <xsl:template match="preguntas[@custom:result]">
+    <xsl:variable name="caducado">
+      <xsl:choose>
+        <xsl:when test="translate(@custom:fecha_vigencia,'/-: ','') = number(translate(@custom:fecha_vigencia,'/-: ',''))">
+          <xsl:if test="$js:fecha_actual - translate(@custom:fecha_vigencia,'/-: ','') &gt; 0">1</xsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:if test="$js:fecha_actual - translate(@custom:date,'/-: ','') &gt; 880000">1</xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="caducidad">
+      <xsl:if test="$caducado=1">text-danger</xsl:if>
+    </xsl:variable>
     <div class="container">
       <main>
         <div class="py-5 text-center">
@@ -139,18 +157,25 @@ exclude-result-prefixes="#default"
         <div class="row g-5">
           <div class="col-12">
             <xsl:choose>
-            <xsl:when test="key('isGeneric', @custom:code)">
-              <h1 class="mb-3 text-center">Código válido únicamente hasta el 14 de Junio</h1>
-            </xsl:when>
+              <xsl:when test="key('isGeneric', @custom:code)">
+                <h1 class="mb-3 text-center">Código válido únicamente hasta el 14 de Junio</h1>
+              </xsl:when>
               <xsl:otherwise>
                 <h1 class="mb-3 text-center">
                   <xsl:value-of select="@custom:email"/>
                 </h1>
-                <h1 class="mb-3 text-center text-primary">
+                <h1 class="mb-3 text-center text-primary {$caducidad}">
                   <xsl:apply-templates select="@custom:date"/>
                 </h1>
-                <h2 class="mb-3 text-center">
-                  <xsl:apply-templates select="@custom:result"/>
+                <h2 class="mb-3 text-center {$caducidad}">
+                  <xsl:choose>
+                    <xsl:when test="$caducado=1">
+                      El código ha caducado
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:apply-templates select="@custom:result"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </h2>
               </xsl:otherwise>
             </xsl:choose>
@@ -158,8 +183,9 @@ exclude-result-prefixes="#default"
               <div class="col-4"/>
               <div class="col-4">
                 <xsl:choose>
+                  <xsl:when test="$caducado=1"></xsl:when>
                   <xsl:when test="@custom:result='Positivo'">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle text-success" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle text-success  {$caducidad}" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no">
                       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                       <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                     </svg>
@@ -253,14 +279,16 @@ exclude-result-prefixes="#default"
           <img class="mb-4" src="assets/minerva.png" alt="" width="72"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Salud</h1>
 
-        <xsl:variable name="invalid-email"><xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if></xsl:variable>
+          <xsl:variable name="invalid-email">
+            <xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if>
+          </xsl:variable>
           <div class="form-floating">
             <input type="email" class="form-control {$invalid-email}" id="floatingEmail" placeholder="name@example.com" value="{@custom:email}" width="" xo-target="{@x:id}" onfocus="this.value=''"/>
-          <xsl:if test="string(@custom:email)!=''">
-            <div class="invalid-feedback">
-              Por favor introduzca un nombre de usuario válido.
-            </div>
-          </xsl:if>
+            <xsl:if test="string(@custom:email)!=''">
+              <div class="invalid-feedback">
+                Por favor introduzca un nombre de usuario válido.
+              </div>
+            </xsl:if>
             <label for="floatingEmail">Correo institucional</label>
           </div>
           <br/>
