@@ -28,6 +28,7 @@ exclude-result-prefixes="#default"
   <xsl:key name="isGeneric" match="*[@custom:code='FD87F7733D4FBDCDF58A0D46545D7E82']" use="@custom:code"/>
 
   <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@colegiominerva.edu.mx')]" use="true()"/>
+  <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@panax.io')]" use="true()"/>
   <xsl:key name="missing" match="preguntas/sintomatologia/opcion[not(@state:checked)]" use="generate-id(../..)"/>
   <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
@@ -64,7 +65,7 @@ exclude-result-prefixes="#default"
                     </xsl:when>
                     <xsl:otherwise>
                       <div class="text-center">
-                        <img src="qr/colegiominerva.edu.mx/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo institucional (nombre.apellido.ap@colegiominerva.edu.mx) para ver el código QR"/>
+                        <img src="qr/{substring-after(@custom:email,'@')}/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo institucional (nombre.apellido.ap@miescuela.edu.mx) para ver el código QR"/>
                         <br/>
                         <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
                       </div>
