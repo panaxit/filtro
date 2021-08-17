@@ -66,8 +66,8 @@ exclude-result-prefixes="#default"
       </style>
       <main class="form-signin">
         <form>
-          <img class="mb-4" src="assets/minerva.png" alt="" width="72"/>
-          <h1 class="h3 mb-3 fw-normal">Filtro de Salud</h1>
+          <img class="mb-4" src="assets/panax.io.png" alt="" width="72"/>
+          <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
         </form>
       </main>
     </div>
