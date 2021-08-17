@@ -16,8 +16,9 @@
     }
   },
   "sources": {
+    "#": "#alquerias",
     "#minerva": cuestionario.load,
     "#alquerias": "alquerias.xml",
-    "#pricing":  "pricing.xml"
+    "#pricing": "pricing.xml"
   }
 }

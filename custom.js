@@ -15,8 +15,10 @@ cuestionario.getQR = function () {
 cuestionario.load = async function () {
     let codigo = location.search.replace(/^\?uid=/, '');
     if (codigo) {
-        xdom.session.loadSession(codigo);
         xdom.post.to("xdom/server/request.asp?command=FiltroSalud.RegistrarEscaneo&@Codigo=" + location.search.replace(/^\?uid=/, ''));
+        await xdom.session.loadSession(codigo);
+        let dominio = xdom.data.document.documentElement.getAttribute("custom:email").split("@").pop();
+        xdom.data.document.addStylesheet({ type: "text/xsl", href: `${dominio}.xslt`, target: "body" });
     } else {
         xdom.fetch.xml("xdom/server/request.asp?command=FiltroSalud.obtenerFormato&@Codigo=" + location.search.replace(/^\?uid=/, '')).then(document => {
             let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
@@ -58,6 +60,6 @@ function toIsoString(date) {
         'T' + pad(date.getHours()) +
         ':' + pad(date.getMinutes()) +
         ':' + pad(date.getSeconds()) +
-        dif + pad(tzo / 60) +
+        'Z' + pad(tzo / 60) +
         ':' + pad(tzo % 60);
 }
