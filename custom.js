@@ -1,33 +1,79 @@
-﻿cuestionario = {}
-cuestionario.getQR = function () {
-    let respuestas = xdom.data.document.selectAll('//sintomatologia').map(rubro => rubro.nodeName + '=' + rubro.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), ""));
-    xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeFiltro/email=${xdom.data.document.documentElement.getAttribute("custom:email")}&datos=${respuestas}`).then(document => {
-        respuesta = document.documentElement.textContent;
-        if (respuesta.length == 32) {
-            xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
-        } else {
-            alert(respuesta)
-        }
+﻿onGoogleLogin = function (response) {
+    let domain = location.hash.split("#").pop();
+    const responsePayload = xdom.cryptography.decodeJwt(response.credential);
+    xdom.session.login(responsePayload.email, response.credential, domain);
+}
 
-    });
+cuestionario = {}
+cuestionario.getQR = function () {
+    let domain = location.hash.split("#").pop();
+    if (domain == 'minerva') {
+        let respuestas = xdom.data.document.selectAll('//sintomatologia').map(rubro => rubro.nodeName + '=' + rubro.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), ""));
+        xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeFiltro/email=${xdom.data.document.documentElement.getAttribute("custom:email")}&datos=${respuestas}`).then(document => {
+            respuesta = document.documentElement.textContent;
+            if (respuesta.length == 32) {
+                xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
+            } else {
+                alert(respuesta)
+            }
+        });
+    } else {
+        let respuestas = xdom.data.document.selectAll('/*/*').map(rubro => cuestionario.formatValue(rubro));
+        xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeText/domain=${domain}&email=${xdom.data.document.documentElement.getAttribute("custom:email")}&datos=${respuestas}`).then(document => {
+            respuesta = document.documentElement.textContent;
+            if (respuesta.length == 32) {
+                xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
+            } else {
+                alert(respuesta)
+            }
+
+        });
+    }
+}
+
+cuestionario.formatValue = function (node) {
+    let return_value;
+    if (node.selectSingleNode('opcion')) {
+        return_value = node.nodeName + '=' + node.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), "")
+    } else {
+        return_value = node.nodeName + '=' + node.getAttribute("x:value");
+    }
+    return return_value;
 }
 
 cuestionario.load = async function () {
+    let domain = location.hash.split("#").pop();
+    //xdom.session.login(undefined, undefined, domain)
     let codigo = location.search.replace(/^\?uid=/, '');
     if (codigo) {
-        xdom.post.to("xdom/server/request.asp?command=FiltroSalud.RegistrarEscaneo&@Codigo=" + location.search.replace(/^\?uid=/, ''));
+        await xdom.post.to("xdom/server/request.asp?command=Filtro.RegistrarEscaneo&@Codigo=" + location.search.replace(/^\?uid=/, ''));
         await xdom.session.loadSession(codigo);
         let dominio = xdom.data.document.documentElement.getAttribute("custom:email").split("@").pop();
         xdom.data.document.addStylesheet({ type: "text/xsl", href: `${dominio}.xslt`, target: "body" });
     } else {
-        xdom.fetch.xml("xdom/server/request.asp?command=FiltroSalud.obtenerFormato&@Codigo=" + location.search.replace(/^\?uid=/, '')).then(document => {
-            let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
-            document.getStylesheets().map(stylesheet => {
-                formato.addStylesheet(stylesheet);
-            })
-            formato.documentElement.setAttribute("x:tag", "minerva");
-            xdom.data.document = formato;
-        });
+        let url;
+        if (domain == 'minerva') {
+            url = `xdom/server/request.asp?command=FiltroSalud.obtenerFormato&@Codigo=${location.search.replace(/^\?uid=/, '')}`
+            xdom.fetch.xml(url).then(document => {
+                let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
+                document.getStylesheets().map(stylesheet => {
+                    formato.addStylesheet(stylesheet);
+                })
+                formato.documentElement.setAttribute("x:tag", "minerva");
+                xdom.data.document = formato;
+            });
+        } else {
+            url = `${domain}.xml`
+            xdom.fetch.xml(url).then(document => {
+                let formato = document;
+                //document.getStylesheets().map(stylesheet => {
+                //    formato.addStylesheet(stylesheet);
+                //})
+                formato.documentElement.setAttribute("x:tag", domain);
+                xdom.data.document = formato;
+            });
+
+        }
     }
 }
 

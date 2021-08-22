@@ -9,39 +9,44 @@ exclude-result-prefixes="#default"
 >
   <xsl:key name="isGeneric" match="*[@custom:code='FD87F7733D4FBDCDF58A0D46545D7E82']" use="@custom:code"/>
 
-  <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@alquerias.com')]" use="true()"/>
-  <xsl:key name="missing" match="preguntas/sintomatologia/opcion[not(@state:checked)]" use="generate-id(../..)"/>
+  <xsl:key name="valid_email" match="cuestionario[contains(@custom:email, '@alquerias.com')]" use="true()"/>
+  <xsl:key name="missing" match="cuestionario/*/opcion[not(@state:checked)]" use="generate-id(../..)"/>
+  <xsl:key name="missing" match="cuestionario/*[not(opcion) and string(@x:value)='']" use="generate-id(..)"/>
   <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="expirado" match="@custom:date[.='Positivo']" use="generate-id(/*)" />
 
+  <xsl:key name="valid_email" match="cuestionario[contains(@custom:email, '@panax.io')]" use="true()"/>
+  <xsl:key name="valid_email" match="cuestionario[@custom:email='sortiz@grupovaltus.com']" use="true()"/>
+
   <xsl:param name="js:fecha_actual"><![CDATA[toIsoString(new Date()).replace(/[^\d]/gi,'').substr(0,14)]]></xsl:param>
-  <xsl:template match="preguntas">
+  <xsl:param name="js:tag"><![CDATA[location.hash.split('#').pop()]]></xsl:param>
+  <xsl:template match="cuestionario">
     <div class="container">
       <main>
         <div class="py-5 text-center">
-          <img class="mb-4" src="assets/alquerias.com.png" alt="" width="100"/>
+          <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="100"/>
           <h2>Filtro de Acceso</h2>
           <p class="lead">Formato para llenar antes de visitar las instalaciones.</p>
+          <h4 class="mb-3 text-center">
+            <xsl:value-of select="@custom:email"/>
+          </h4>
         </div>
 
         <div class="row g-5">
           <div class="col-12">
-            <h4 class="mb-3 text-center">
-              <xsl:value-of select="@custom:email"/>
-            </h4>
             <form class="needs-validation" novalidate="">
               <div class="my-3">
-                <xsl:apply-templates select="sintomatologia"/>
+                <xsl:apply-templates/>
               </div>
 
               <hr class="my-4"/>
               <xsl:choose>
                 <xsl:when test="@custom:code">
                   <div class="text-center">
-                    <img src="qr/alquerias.com/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo electrónico (nombre.apellido.ap@alquerias.com) para ver el código QR"/>
+                    <img src="qr/{$js:tag}/{@custom:code}.png" class="img-fluid" alt="Recuerde que debe ingresar con su correo electrónico (nombre.apellido.ap@{$js:tag}.com) para ver el código QR"/>
                     <br/>
-                    <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
+                    <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de un solo uso</div>
                   </div>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
                     <!--<xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
@@ -106,7 +111,7 @@ exclude-result-prefixes="#default"
     </xsl:choose>-->
   </xsl:template>
 
-  <xsl:template match="preguntas[@custom:result]">
+  <xsl:template match="cuestionario[@custom:result]">
     <xsl:variable name="caducado">
       <xsl:choose>
         <xsl:when test="translate(@custom:fecha_vigencia,'/-: ','') = number(translate(@custom:fecha_vigencia,'/-: ',''))">
@@ -188,8 +193,10 @@ exclude-result-prefixes="#default"
     </div>
   </xsl:template>
 
-  <xsl:template match="preguntas[not(key('valid_email',true()))]">
+  <xsl:template match="cuestionario[not(key('valid_email',true()))]">
     <div class="text-center">
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css"/>
+      <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
       <style>
         <![CDATA[
         html,
@@ -246,11 +253,56 @@ exclude-result-prefixes="#default"
           }
         }]]>
       </style>
+      <style type="text/css">
+        <![CDATA[
+    .signup_button {
+      display: inline-block;
+      background: white;
+      color: #444;
+      border-radius: 5px;
+      border: thin solid #888;
+      box-shadow: 1px 1px 1px grey;
+      white-space: nowrap;
+    }
+    .signup_button:hover {
+      cursor: pointer;
+    }
+    span.label {
+      font-family: serif;
+      font-weight: normal;
+    }
+    span.icon {
+      background: url('https://developers-dot-devsite-v2-prod.appspot.com/identity/sign-in/g-normal.png') transparent 5px 50% no-repeat;
+      display: inline-block;
+      vertical-align: middle;
+      width: 42px;
+      height: 42px;
+    }
+    
+    span.icon-app {
+      background: url('./custom/images/favicon.png') transparent 5px 50% no-repeat;
+      display: inline-block;
+      vertical-align: middle;
+      width: 52px;
+      height: 42px;
+    }
+    .buttonText {
+      display: inline-block;
+      vertical-align: middle;
+      padding-right: 42px;
+      font-size: 14px;
+      font-weight: bold;
+      /* Use the Roboto font that is loaded in the <head> */
+      font-family: 'Roboto', sans-serif;
+    }
+]]>
+      </style>
       <script>console.log('inicializando')</script>
       <main class="form-signin">
         <form class="needs-validation" novalidate="">
-          <img class="mb-4" src="assets/alquerias.com.png" alt="" width="100"/>
+          <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="100"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
+          <br/>
 
           <xsl:variable name="invalid-email">
             <xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if>
@@ -275,16 +327,49 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; 'alquerias.com'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.sources['#alquerias']">
+          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; '{$js:tag}'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['{$js:tag}']">
             Continuar
           </button>
+          <div id="g_id_onload"
+            data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
+            data-callback="onGoogleLogin"
+            data-auto_prompt="false">
+          </div>
+          <div class="g_id_signin signup_button"
+               data-type="standard"
+               data-size="large"
+               data-theme="outline"
+               data-text="sign_in_with"
+               data-shape="rectangular"
+               data-logo_alignment="left">
+          </div>
           <p class="mt-5 mb-3 text-muted">2021 &#169; Panax</p>
         </form>
       </main>
     </div>
   </xsl:template>
 
-  <xsl:template match="preguntas/*">
+  <xsl:template match="cuestionario/*">
+    <xsl:variable name="invalid-email">
+      <xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if>
+    </xsl:variable>
+    <div class="container">
+      <div class="row">
+        <div class="col-4 align-self-start">
+          <label class="form-label" for="credit">
+            <h5>
+              <xsl:value-of select="@label"/>:
+            </h5>
+          </label>
+        </div>
+        <div class="col-8 align-self-end">
+          <input type="{name()}" class="form-control {$invalid-email}" value="{@x:value}" size="50" xo-target="{@x:id}" onchange="this.sourceNode.setAttribute('@x:value', this.value)"/>
+        </div>
+      </div>
+    </div>
+  </xsl:template>
+
+  <xsl:template match="cuestionario/*[opcion]">
     <div class="container">
       <div class="row">
         <div class="col-8 align-self-start">
@@ -342,7 +427,7 @@ exclude-result-prefixes="#default"
     </button>
   </xsl:template>
 
-  <xsl:template match="preguntas/*[opcion[not(@state:checked)]]/opcion">
+  <xsl:template match="cuestionario/*[opcion[not(@state:checked)]]/opcion">
     <xsl:variable name="active">
       <xsl:choose>
         <xsl:when test="../@state:active">
@@ -397,7 +482,7 @@ exclude-result-prefixes="#default"
     </div>
   </xsl:template>
 
-  <xsl:template match="preguntas/*[opcion[not(@state:checked)]]">
+  <xsl:template match="cuestionario/*[opcion[not(@state:checked)]]">
     <xsl:variable name="active">
       <xsl:choose>
         <xsl:when test="@state:active">

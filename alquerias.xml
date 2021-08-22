@@ -1,7 +1,4 @@
-﻿<?xml-stylesheet type="text/xsl" href="acceso_fraccionamiento.xslt" target="body"?>
+﻿<?xml-stylesheet type="text/xsl" href="alquerias.xslt" target="body"?>
 <cuestionario xmlns:state="http://panax.io/state" xmlns:custom="http://panax.io/custom">
-  <sintomatologia>
-    <opcion state:checked="1">Pregunta 1</opcion>
-    <opcion state:checked="1">Pregunta 2</opcion>
-  </sintomatologia>
+  <visitante label="Nombre de la persona que lo visita"></visitante>
 </cuestionario>
