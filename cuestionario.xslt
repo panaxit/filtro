@@ -312,21 +312,21 @@ exclude-result-prefixes="#default"
         </label>
       </div>
       <div class="col-2 align-self-end">
-        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
+        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
           <xsl:if test="@state:checked=0">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
+              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
       </div>
       <div class="col-2 align-self-center">
-        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
+        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
           <xsl:if test="@state:checked=1">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
+              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
@@ -362,7 +362,7 @@ exclude-result-prefixes="#default"
       <div class="row flex-nowrap">
         <div class="col"></div>
         <div class="col-5 text-end">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 9)+1}, !{(position() mod 9)}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 9)+1}, !{(position() mod 9)}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>
@@ -374,7 +374,7 @@ exclude-result-prefixes="#default"
           </svg>
         </div>
         <div class="col-5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 9)+1}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 9)+1}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>

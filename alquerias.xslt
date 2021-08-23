@@ -12,8 +12,8 @@ exclude-result-prefixes="#default"
   <xsl:key name="valid_email" match="cuestionario[contains(@custom:email, '@alquerias.com')]" use="true()"/>
   <xsl:key name="missing" match="cuestionario/*/opcion[not(@state:checked)]" use="generate-id(../..)"/>
   <xsl:key name="missing" match="cuestionario/*[not(opcion) and string(@x:value)='']" use="generate-id(..)"/>
-  <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
-  <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
+  <xsl:key name="rechazado" match="@custom:result[.='Rechazado']" use="generate-id(/*)" />
+  <xsl:key name="autorizado" match="@custom:result[.='Autorizado']" use="generate-id(/*)" />
   <xsl:key name="expirado" match="@custom:date[.='Positivo']" use="generate-id(/*)" />
 
   <xsl:key name="valid_email" match="cuestionario[contains(@custom:email, '@panax.io')]" use="true()"/>
@@ -162,7 +162,7 @@ exclude-result-prefixes="#default"
               <div class="col-4">
                 <xsl:choose>
                   <xsl:when test="$caducado=1"></xsl:when>
-                  <xsl:when test="@custom:result='Positivo'">
+                  <xsl:when test="key('autorizado',generate-id())">
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle text-success  {$caducidad}" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no">
                       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                       <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
@@ -330,6 +330,7 @@ exclude-result-prefixes="#default"
           <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; '{$js:tag}'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['{$js:tag}']">
             Continuar
           </button>
+          <br/>
           <div id="g_id_onload"
             data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
             data-callback="onGoogleLogin"

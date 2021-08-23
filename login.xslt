@@ -2,10 +2,12 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:x="http://panax.io/xdom"
+xmlns:js="http://panax.io/xdom/javascript"
 xmlns:state="http://panax.io/state"
 xmlns:custom="http://panax.io/custom"
 exclude-result-prefixes="#default"
 >
+  <xsl:param name="js:tag"><![CDATA[location.hash.split('#').pop()]]></xsl:param>
   <xsl:template match="*">
     <div class="text-center">
       <style>
@@ -66,7 +68,7 @@ exclude-result-prefixes="#default"
       </style>
       <main class="form-signin">
         <form>
-          <img class="mb-4" src="assets/panax.png" alt="" width="72"/>
+          <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="72" onerror="this.src='assets/panax.png'"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
 
           <div class="form-floating">
@@ -84,7 +86,7 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(floatingEmail.value, calcMD5(floatingPassword.value), location.hash.split('#').pop())">Continuar</button>
+          <button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(floatingEmail.value, xdom.cryptography.encodeMD5(floatingPassword.value), location.hash.split('#').pop())">Continuar</button>
           <p class="mt-5 mb-3 text-muted">&#169; 2021</p>
         </form>
       </main>

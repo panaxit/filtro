@@ -1,6 +1,6 @@
 {
-  "database": "main",
   "server": {
+    "database_id": filtro.getConnectionId,
     "endpoints": {
       "login": "xdom/server/login.asp",
       "logout": "xdom/server/logout.asp",

@@ -1,4 +1,9 @@
-﻿onGoogleLogin = function (response) {
+﻿filtro = {};
+filtro.getConnectionId = function () {
+    return (location.hash.split("#").pop() || "main");
+}
+
+onGoogleLogin = function (response) {
     let domain = location.hash.split("#").pop();
     const responsePayload = xdom.cryptography.decodeJwt(response.credential);
     xdom.session.login(responsePayload.email, response.credential, domain);
@@ -46,16 +51,19 @@ cuestionario.load = async function () {
     //xdom.session.login(undefined, undefined, domain)
     let codigo = location.search.replace(/^\?uid=/, '');
     if (codigo) {
-        await xdom.post.to("xdom/server/request.asp?command=Filtro.RegistrarEscaneo&@Codigo=" + location.search.replace(/^\?uid=/, ''));
-        await xdom.session.loadSession(codigo);
-        let dominio = xdom.data.document.documentElement.getAttribute("custom:email").split("@").pop();
-        xdom.data.document.addStylesheet({ type: "text/xsl", href: `${dominio}.xslt`, target: "body" });
+        await xdom.post.to("xdom/server/request.asp?command=Filtro.RegistrarEscaneo&@codigo=" + location.search.replace(/^\?uid=/, ''));
+        xdom.session.loadSession(codigo).then(document => {
+            if (!xdom.data.document.getStylesheets().length) {
+                let codigo = location.search.replace(/^\?uid=/, '');
+                xdom.data.document.addStylesheet({ type: "text/xsl", href: `${codigo}.xslt`, target: "body" });
+            }
+        });
     } else {
         let url;
         if (domain == 'minerva') {
             url = `xdom/server/request.asp?command=FiltroSalud.obtenerFormato&@Codigo=${location.search.replace(/^\?uid=/, '')}`
             xdom.fetch.xml(url).then(document => {
-                let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
+                let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas') || document);
                 document.getStylesheets().map(stylesheet => {
                     formato.addStylesheet(stylesheet);
                 })
