@@ -6,7 +6,11 @@ filtro.getConnectionId = function () {
 onGoogleLogin = function (response) {
     let domain = location.hash.split("#").pop();
     const responsePayload = xdom.cryptography.decodeJwt(response.credential);
-    xdom.session.login(responsePayload.email, response.credential, domain);
+    xdom.session.id_token = response.credential;
+    xdom.data.document.documentElement.setAttribute("custom:email", responsePayload.email)
+    //xdom.session.login(responsePayload.email, response.credential, domain).catch(() => {
+    //    xdom.data.document.documentElement.setAttribute("custom:email", "");
+    //});
 }
 
 cuestionario = {}

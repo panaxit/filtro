@@ -45,7 +45,7 @@ exclude-result-prefixes="#default"
                     <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
                   </div>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <!--<xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
+                    <!--<xsl:attribute name="onclick">xdom.manifest.stores["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
                     <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
@@ -276,7 +276,7 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; '{$js:tag}'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.sources['#{$js:tag}']">
+          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; '{$js:tag}'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['#{$js:tag}']">
             Continuar
           </button>
           <p class="mt-5 mb-3 text-muted">2021 &#169; Panax</p>
