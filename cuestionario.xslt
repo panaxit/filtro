@@ -71,7 +71,7 @@ exclude-result-prefixes="#default x js state custom"
                     <xsl:apply-templates mode="control.modal" select="."/>
                   </xsl:if>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <!--<xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
+                    <!--<xsl:attribute name="onclick">xdom.manifest.stores["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
                     <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>

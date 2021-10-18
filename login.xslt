@@ -8,8 +8,55 @@ xmlns:custom="http://panax.io/custom"
 exclude-result-prefixes="#default"
 >
   <xsl:param name="js:tag"><![CDATA[location.hash.split('#').pop()]]></xsl:param>
+  <xsl:param name="js:secure"><![CDATA[location.protocol.indexOf('https')!=-1 || location.hostname=='localhost']]></xsl:param>
   <xsl:template match="*">
     <div class="text-center">
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css"/>
+      <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
+      <style type="text/css">
+        <![CDATA[
+    .signup_button {
+      display: inline-block;
+      background: white;
+      color: #444;
+      border-radius: 5px;
+      border: thin solid #888;
+      box-shadow: 1px 1px 1px grey;
+      white-space: nowrap;
+    }
+    .signup_button:hover {
+      cursor: pointer;
+    }
+    span.label {
+      font-family: serif;
+      font-weight: normal;
+    }
+    span.icon {
+      background: url('https://developers-dot-devsite-v2-prod.appspot.com/identity/sign-in/g-normal.png') transparent 5px 50% no-repeat;
+      display: inline-block;
+      vertical-align: middle;
+      width: 42px;
+      height: 42px;
+    }
+    
+    span.icon-app {
+      background: url('./custom/images/favicon.png') transparent 5px 50% no-repeat;
+      display: inline-block;
+      vertical-align: middle;
+      width: 52px;
+      height: 42px;
+    }
+    .buttonText {
+      display: inline-block;
+      vertical-align: middle;
+      padding-right: 42px;
+      font-size: 14px;
+      font-weight: bold;
+      /* Use the Roboto font that is loaded in the <head> */
+      font-family: 'Roboto', sans-serif;
+    }
+]]>
+      </style>
       <style>
         <![CDATA[
         html,
