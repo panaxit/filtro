@@ -5,42 +5,49 @@ xmlns:x="http://panax.io/xdom"
 xmlns:js="http://panax.io/xdom/javascript"
 xmlns:state="http://panax.io/state"
 xmlns:custom="http://panax.io/custom"
-exclude-result-prefixes="#default"
+exclude-result-prefixes="#default x js state custom"
 >
-  <xsl:key name="isGeneric" match="*[@custom:code='03E95B82C65C684026F2D7CA40A193DD']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='147742534F68CBE79D45A05459863A38']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='2D088A1D090097F62ABD2C9D5DC3F7A1']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='33943D621F7D6F6066F60EA76A27FCBE']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='411B61CF6B00B7DD908FF0DB285D05EE']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='4237705FC536B111AE489221BAE985EC']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='4452BD783FCA6ED27A829B6783B7F0FF']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='4FB6ED8A377E90B832823F5D0B595C07']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='5327950084B17716F54392D83A6525AB']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='6ED4F0A91C15D5355ECE78D203EA5D83']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='76B902A49F66D859493F9F3D171ED95E']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='7C19175AB16493EADCDB4F02E268DE89']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='7D3E7766E47487AD00818659463505B5']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='7D54D347EA3AB836F3EE683CBD2F46A7']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='8B39C2A472ACAD75EEBD0F1D7D4415BF']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='9B1842D45902F978B0E1E9BE632D22EA']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='AF0C8FB04A1C1996351238935F07ACB2']" use="@custom:code"/>
-  <xsl:key name="isGeneric" match="*[@custom:code='F15FA8D092185E7A25B3CC6DBD8B5616']" use="@custom:code"/>
+  <xsl:import href="xdom/resources/modal.xslt"/>
+  <xsl:param name="js:secure"><![CDATA[location.protocol.indexOf('https')!=-1 || location.hostname=='localhost']]></xsl:param>
+  <xsl:template match="/">
+    <span>
+      <xsl:apply-templates select="*"/>
+    </span>
+  </xsl:template>
+
+  <!-- MODAL: Start -->
+  <xsl:template match="*" mode="control.modal.header.title.label">
+    Código QR
+  </xsl:template>
+
+  <xsl:template match="*" mode="control.modal.body">
+    <xsl:apply-templates mode="preguntas.image" select="."/>
+  </xsl:template>
+
+  <xsl:template match="*" mode="control.modal.footer">
+    <button type="button" class="btn btn_outline_information__data" data-dismiss="modal" xo-target="{@x:id}" onclick="this.sourceNode.setAttribute('state:showModal','false')">
+      Cerrar
+    </button>
+  </xsl:template>
+  <!-- MODAL: End -->
+
   <xsl:key name="isGeneric" match="*[@custom:code='FD87F7733D4FBDCDF58A0D46545D7E82']" use="@custom:code"/>
 
+  <xsl:key name="valid_email" match="cuestionario[@custom:email='sortiz@grupovaltus.com']" use="true()"/>
   <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@colegiominerva.edu.mx')]" use="true()"/>
-  <xsl:key name="valid_email" match="preguntas[contains(@custom:email, '@panax.io')]" use="true()"/>
   <xsl:key name="missing" match="preguntas/sintomatologia/opcion[not(@state:checked)]" use="generate-id(../..)"/>
   <xsl:key name="rechazado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="autorizado" match="@custom:result[.='Positivo']" use="generate-id(/*)" />
   <xsl:key name="expirado" match="@custom:date[.='Positivo']" use="generate-id(/*)" />
 
   <xsl:param name="js:fecha_actual"><![CDATA[toIsoString(new Date()).replace(/[^\d]/gi,'').substr(0,14)]]></xsl:param>
+  <xsl:param name="js:tag"><![CDATA[xdom.data.document.tag.split('#').pop()]]></xsl:param>
   <xsl:template match="preguntas">
     <div class="container">
       <main>
         <div class="py-5 text-center">
           <!--<img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"/>-->
-          <h2>Filtro de Salud</h2>
+          <h2>Filtro de Acceso</h2>
           <p class="lead">Formato para llenar antes de visitar las instalaciones de la institución. Agradecemos su veracidad.</p>
         </div>
 
@@ -57,32 +64,12 @@ exclude-result-prefixes="#default"
               <hr class="my-4"/>
               <xsl:choose>
                 <xsl:when test="@custom:code">
-                  <xsl:choose>
-                    <xsl:when test="*/*[@state:checked='1']">
-                      <div class="alert alert-danger text-center" role="alert">
-                        Favor de quedarse en casa.
-                      </div>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <style>
-                        <![CDATA[img.broken {
-    content: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'70'%20height%3D'70'%20fill%3D'currentColor'%20class%3D'bi%20bi-exclamation-triangle-fill%20text-danger'%20viewBox%3D'0%200%2016%2016'%3E%3Cpath%20d%3D'M8.982%201.566a1.13%201.13%200%200%200-1.96%200L.165%2013.233c-.457.778.091%201.767.98%201.767h13.713c.889%200%201.438-.99.98-1.767L8.982%201.566zM8%205c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%205.995A.905.905%200%200%201%208%205zm.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2z'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
-    display: block;
-    margin: 10px 5px 0 10px;
-}
-                      ]]>
-                      </style>
-                      <div class="text-center">
-                        <div class="text-center" role="alert">
-                          <img src="qr/{substring-after(@custom:email,'@')}/{@custom:code}.png" class="img-fluid">
-                            <xsl:attribute name="onerror">this.parentNode.appendChild(document.createTextNode('Hubo un problema al recuperar el código. Actualice la página.')); this.classList.add('broken');</xsl:attribute>
-                          </img>
-                        </div>
-                        <br/>
-                        <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
-                      </div>
-                    </xsl:otherwise>
-                  </xsl:choose>
+                  <xsl:apply-templates mode="preguntas.image" select="."/>
+                  <br/>
+                  <div class="alert alert-danger text-center" role="alert">Este código tiene una vigencia de 12 horas</div>
+                  <xsl:if test="@state:showModal='true'">
+                    <xsl:apply-templates mode="control.modal" select="."/>
+                  </xsl:if>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
                     <!--<xsl:attribute name="onclick">xdom.manifest.sources["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
                     <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
@@ -125,6 +112,47 @@ exclude-result-prefixes="#default"
     </div>
   </xsl:template>
 
+  <xsl:template match="*" mode="preguntas.image">
+    <xsl:choose>
+      <xsl:when test="*/*[@state:checked='1']">
+        <div class="alert alert-danger text-center" role="alert">
+          Favor de quedarse en casa.
+        </div>
+      </xsl:when>
+      <xsl:otherwise>
+        <style>
+          <![CDATA[img.broken {
+    content: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'70'%20height%3D'70'%20fill%3D'currentColor'%20class%3D'bi%20bi-exclamation-triangle-fill%20text-danger'%20viewBox%3D'0%200%2016%2016'%3E%3Cpath%20d%3D'M8.982%201.566a1.13%201.13%200%200%200-1.96%200L.165%2013.233c-.457.778.091%201.767.98%201.767h13.713c.889%200%201.438-.99.98-1.767L8.982%201.566zM8%205c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%205.995A.905.905%200%200%201%208%205zm.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2z'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+    display: block;
+    margin: 10px 5px 0 10px;
+}
+.modal-dialog { max-width: 700px }
+.modal img.clickable { width:100% }
+img.clickable {cursor:pointer}
+                      ]]>
+        </style>
+        <div class="text-center">
+          <div class="text-center" role="alert">
+            <img src="{@custom:code}" class="img-fluid clickable" xo-target="{@x:id}">
+              <xsl:if test="string-length(@custom:code)=32">
+                <xsl:attribute name="src">
+                  <xsl:text/>qr/<xsl:value-of select="substring-after(@custom:email,'@')"/>/<xsl:value-of select="@custom:code"/>.png<xsl:text/>
+                </xsl:attribute>
+              </xsl:if>
+              <xsl:attribute name="onclick">
+                <xsl:text/>this.sourceNode.setAttribute('state:showModal',<xsl:choose>
+                  <xsl:when test="@state:showModal='true'">'false'</xsl:when>
+                  <xsl:otherwise>'true'</xsl:otherwise>
+                </xsl:choose>)<xsl:text/>
+              </xsl:attribute>
+              <xsl:attribute name="onerror">cuestionario.recoverCode(this);</xsl:attribute>
+            </img>
+          </div>
+        </div>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="@custom:result[.='Positivo']">Autorizado</xsl:template>
   <xsl:template match="@custom:result[.='Negativo']">Se sugiere quedarse en casa</xsl:template>
   <xsl:template match="@custom:date">
@@ -164,7 +192,7 @@ exclude-result-prefixes="#default"
       <main>
         <div class="py-5 text-center">
           <!--<img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"/>-->
-          <h2>Filtro de Salud</h2>
+          <h2>Filtro de Acceso</h2>
         </div>
 
         <div class="row g-5">
@@ -230,6 +258,10 @@ exclude-result-prefixes="#default"
 
   <xsl:template match="preguntas[not(key('valid_email',true()))]">
     <div class="text-center">
+      <xsl:if test="$js:secure='true'">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css"/>
+        <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
+      </xsl:if>
       <style>
         <![CDATA[
         html,
@@ -289,8 +321,8 @@ exclude-result-prefixes="#default"
       <script>console.log('inicializando')</script>
       <main class="form-signin">
         <form class="needs-validation" novalidate="">
-          <img class="mb-4" src="assets/minerva.png" alt="" width="72"/>
-          <h1 class="h3 mb-3 fw-normal">Filtro de Salud</h1>
+          <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="72"/>
+          <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
 
           <xsl:variable name="invalid-email">
             <xsl:if test="string(@custom:email)!=''">is-invalid</xsl:if>
@@ -315,9 +347,25 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; 'colegiominerva.edu.mx'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['#minerva']">
+          <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; 'colegiominerva.edu.mx'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['#{$js:tag}']">
             Continuar
           </button>
+          <br/>
+          <xsl:if test="$js:secure='true'">
+            <div id="g_id_onload"
+              data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
+              data-callback="onGoogleLogin"
+              data-auto_prompt="true">
+            </div>
+            <div class="g_id_signin signup_button text-center"
+                 data-type="standard"
+                 data-size="large"
+                 data-theme="outline"
+                 data-text="sign_in_with"
+                 data-shape="rectangular"
+                 data-logo_alignment="left">
+            </div>
+          </xsl:if>
           <p class="mt-5 mb-3 text-muted">2021 &#169; Panax</p>
         </form>
       </main>
@@ -351,21 +399,21 @@ exclude-result-prefixes="#default"
         </label>
       </div>
       <div class="col-2 align-self-end">
-        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
+        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
           <xsl:if test="@state:checked=0">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
+              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
       </div>
       <div class="col-2 align-self-center">
-        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
+        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
           <xsl:if test="@state:checked=1">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
+              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
