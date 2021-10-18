@@ -6,82 +6,77 @@ filtro.getConnectionId = function () {
 onGoogleLogin = function (response) {
     let domain = location.hash.split("#").pop();
     const responsePayload = xdom.cryptography.decodeJwt(response.credential);
-    xdom.session.login(responsePayload.email, response.credential, domain);
+    xdom.data.document.documentElement.setAttribute("custom:email", responsePayload.email);
 }
+
+xdom.listeners.events.add('loggedOut', function (event) {
+    xdom.session.login(undefined, undefined, location.hash.split('#').pop());
+});
 
 cuestionario = {}
-cuestionario.getQR = function () {
-    let domain = location.hash.split("#").pop();
-    if (domain == 'minerva') {
-        let respuestas = xdom.data.document.selectAll('//sintomatologia').map(rubro => rubro.nodeName + '=' + rubro.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), ""));
-        xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeFiltro/email=${xdom.data.document.documentElement.getAttribute("custom:email")}&datos=${respuestas}`).then(document => {
-            respuesta = document.documentElement.textContent;
-            if (respuesta.length == 32) {
-                xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
-            } else {
-                alert(respuesta)
-            }
-        });
-    } else {
-        let respuestas = xdom.data.document.selectAll('/*/*').map(rubro => cuestionario.formatValue(rubro));
-        xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeText/domain=${domain}&email=${xdom.data.document.documentElement.getAttribute("custom:email")}&datos=${respuestas}`).then(document => {
-            respuesta = document.documentElement.textContent;
-            if (respuesta.length == 32) {
-                xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
-            } else {
-                alert(respuesta)
-            }
-
-        });
-    }
+cuestionario.getAnswers = function () {
+    return xdom.data.document.selectAll('//sintomatologia').map(rubro => rubro.nodeName + '=' + rubro.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), ""));
 }
 
-cuestionario.formatValue = function (node) {
-    let return_value;
-    if (node.selectSingleNode('opcion')) {
-        return_value = node.nodeName + '=' + node.selectAll('*').reduce((output, o) => output += o.getAttribute("state:checked"), "")
+cuestionario.getQR = function () {
+    let respuestas = cuestionario.getAnswers();
+    let email = xdom.data.document.documentElement.getAttribute("custom:email");
+    xdom.fetch.xml(`http://qr.filtro.panax.io/QrGeneratorService.svc/EncodeFiltro/email=${email}&datos=${respuestas}`).then(document => {
+        respuesta = document.documentElement.textContent;
+        if (respuesta.length == 32) {
+            xdom.data.document.documentElement.setAttribute("custom:code", (respuesta || ""), true);
+        } else {
+            console.log(respuesta)
+        }
+    }).catch(() => {
+        cuestionario.getGoogleCode(respuestas, email)
+    });
+}
+
+cuestionario.getGoogleCode = function (respuestas, email) {
+    let vencimiento = toIsoString(new Date().addHours(13))
+    var ciphertext = CryptoJS.AES.encrypt(`{d:"${respuestas}",u:"${email}",e:"${vencimiento.substr(11, 8).replace(/[^\dT]/g, '')}",i:"A001"}`, vencimiento.substr(0, 10).replace(/[^\dT]/g, '') + location.hash);
+    var url = new URL(`https://chart.googleapis.com/chart?cht=qr&chs=300x300&chld=L|1`)
+    url.searchParams.append("chl", ciphertext)
+    xdom.data.document.documentElement.setAttribute("custom:code", (url.toString() || ""), true);
+}
+
+cuestionario.recoverCode = async function (target, retries) {
+    var retries = (retries || 0)
+    if (retries > 3) {
+        cuestionario.getGoogleCode(cuestionario.getAnswers(), xdom.data.document.documentElement.getAttribute("custom:email"))
+        //target.parentNode.appendChild(document.createTextNode('Hubo un problema al recuperar el código. Actualice la página.'));
+        //target.classList.add('broken');
     } else {
-        return_value = node.nodeName + '=' + node.getAttribute("x:value");
+        try {
+            await xdom.delay(1000);
+            file = await fetch(target.src);
+            if (file && file.status != 200) {
+                throw ("Error retrieving file");
+            }
+            target.src = target.src;
+        } catch (e) {
+            cuestionario.recoverCode(target, ++retries);
+        }
     }
-    return return_value;
 }
 
 cuestionario.load = async function () {
-    let domain = location.hash.split("#").pop();
-    //xdom.session.login(undefined, undefined, domain)
     let codigo = location.search.replace(/^\?uid=/, '');
     if (codigo) {
-        await xdom.post.to("xdom/server/request.asp?command=Filtro.RegistrarEscaneo&@codigo=" + location.search.replace(/^\?uid=/, ''));
-        xdom.session.loadSession(codigo).then(document => {
-            if (!xdom.data.document.getStylesheets().length) {
-                let codigo = location.search.replace(/^\?uid=/, '');
-                xdom.data.document.addStylesheet({ type: "text/xsl", href: `${codigo}.xslt`, target: "body" });
-            }
-        });
+        xdom.session.loadSession(codigo);
+        xdom.post.to(`${xdom.manifest.server.endpoints["request"]}?command=FiltroSalud.RegistrarEscaneo&@Codigo=${location.search.replace(/^\?uid=/, '')}`);
     } else {
-        let url;
-        if (domain == 'minerva') {
-            url = `xdom/server/request.asp?command=FiltroSalud.obtenerFormato&@Codigo=${location.search.replace(/^\?uid=/, '')}`
-            xdom.fetch.xml(url).then(document => {
-                let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas') || document);
+        xdom.fetch.xml(`${xdom.manifest.server.endpoints["request"]}?command=FiltroSalud.obtenerFormato&@Codigo=${location.search.replace(/^\?uid=/, '')}`).then(document => {
+            let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
+            if (formato.documentElement) {
                 document.getStylesheets().map(stylesheet => {
                     formato.addStylesheet(stylesheet);
                 })
                 formato.documentElement.setAttribute("x:tag", "minerva");
                 xdom.data.document = formato;
-            });
-        } else {
-            url = `${domain}.xml`
-            xdom.fetch.xml(url).then(document => {
-                let formato = document;
-                //document.getStylesheets().map(stylesheet => {
-                //    formato.addStylesheet(stylesheet);
-                //})
-                formato.documentElement.setAttribute("x:tag", domain);
-                xdom.data.document = formato;
-            });
-
-        }
+            }
+        });
     }
 }
 
@@ -116,4 +111,9 @@ function toIsoString(date) {
         ':' + pad(date.getSeconds()) +
         'Z' + pad(tzo / 60) +
         ':' + pad(tzo % 60);
+}
+
+Date.prototype.addHours = function (h) {
+    this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+    return this;
 }
