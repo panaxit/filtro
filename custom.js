@@ -3,6 +3,12 @@ filtro.getConnectionId = function () {
     return (location.hash.split("#").pop() || "main");
 }
 
+goHTTPS = function () {
+    var url = new URL(location.href);
+    url.protocol = 'https:';
+    location.href = url.toString();
+}
+
 onGoogleLogin = async function (response) {
     let domain = location.hash.split("#").pop();
     const responsePayload = xdom.cryptography.decodeJwt(response.credential);
@@ -10,6 +16,7 @@ onGoogleLogin = async function (response) {
     if (responsePayload.email.indexOf('@colegiominerva.edu.mx') != -1) {
         xdom.dom.navigateTo("#minerva");
     }
+    xdom.data.document.documentElement.setAttribute("custom:email", xdom.session.email);
     xdom.session.login(undefined, undefined, location.hash.split('#').pop());
     //if (xdom.state.seed = '#') {
     //    if (responsePayload.email.indexOf('@colegiominerva.edu.mx')!=-1) {

@@ -142,7 +142,7 @@ exclude-result-prefixes="#default"
               <div id="g_id_onload"
   data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
   data-callback="onGoogleLogin"
-  data-auto_prompt="true">
+  data-auto_prompt="false">
               </div>
               <div class="g_id_signin signup_button text-center"
                    data-type="standard"
@@ -154,7 +154,8 @@ exclude-result-prefixes="#default"
               </div>
             </xsl:when>
             <xsl:otherwise>
-              <button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(undefined, undefined, location.hash.split('#').pop())">Continuar</button>
+              <kbd><a style="color:white; font-size:14pt;" href="https://filtro.panax.io/">https://filtro.panax.io/</a></kbd>
+              <!--<button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(undefined, undefined, location.hash.split('#').pop())">Continuar</button>-->
             </xsl:otherwise>
           </xsl:choose>
           <p class="mt-5 mb-3 text-muted">&#169; 2021</p>

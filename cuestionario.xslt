@@ -352,6 +352,12 @@ img.clickable {cursor:pointer}
           <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="let email=document.querySelector('#floatingEmail'); xdom.delay(100).then(_=&gt;{{this.sourceNode.setAttribute('custom:email',[...email.value &amp;&amp; email.value.match(/[^@]+/g), email.value &amp;&amp; 'colegiominerva.edu.mx'].filter((el,i)=&gt;i&lt;2).join('@'), true)}}); xdom.data.stores['#{$js:tag}']">
             Continuar
           </button>
+          <xsl:if test="$js:secure!='true' and 1=0">
+            <br/>
+            <button class="w-100 btn btn-lg btn-primary" type="button" xo-target="{@x:id}" onclick="goHTTPS();">
+              Continuar con cuenta de google
+            </button>
+          </xsl:if>
           <br/>
           <xsl:if test="$js:secure='true'">
             <div id="g_id_onload"
