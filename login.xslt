@@ -114,6 +114,10 @@ exclude-result-prefixes="#default"
         }]]>
       </style>
       <main class="form-signin">
+        <xsl:if test="$js:secure='true'">
+          <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css"/>
+          <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
+        </xsl:if>
         <form>
           <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="72" onerror="this.src='assets/panax.png'"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
@@ -133,7 +137,26 @@ exclude-result-prefixes="#default"
               <input type="checkbox" value="remember-me"/> Remember me
             </label>
           </div>-->
-          <button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(undefined, undefined, location.hash.split('#').pop())">Continuar</button>
+          <xsl:choose>
+            <xsl:when test="$js:secure='true'">
+              <div id="g_id_onload"
+  data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
+  data-callback="onGoogleLogin"
+  data-auto_prompt="true">
+              </div>
+              <div class="g_id_signin signup_button text-center"
+                   data-type="standard"
+                   data-size="large"
+                   data-theme="outline"
+                   data-text="sign_in_with"
+                   data-shape="rectangular"
+                   data-logo_alignment="left">
+              </div>
+            </xsl:when>
+            <xsl:otherwise>
+              <button class="w-100 btn btn-lg btn-primary" type="submit" xo-target="{@x:id}" onclick="xdom.session.login(undefined, undefined, location.hash.split('#').pop())">Continuar</button>
+            </xsl:otherwise>
+          </xsl:choose>
           <p class="mt-5 mb-3 text-muted">&#169; 2021</p>
         </form>
       </main>

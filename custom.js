@@ -3,14 +3,34 @@ filtro.getConnectionId = function () {
     return (location.hash.split("#").pop() || "main");
 }
 
-onGoogleLogin = function (response) {
+onGoogleLogin = async function (response) {
     let domain = location.hash.split("#").pop();
     const responsePayload = xdom.cryptography.decodeJwt(response.credential);
-    xdom.data.document.documentElement.setAttribute("custom:email", responsePayload.email);
+    xdom.session.email = responsePayload.email;
+    if (responsePayload.email.indexOf('@colegiominerva.edu.mx') != -1) {
+        xdom.dom.navigateTo("#minerva");
+    }
+    xdom.session.login(undefined, undefined, location.hash.split('#').pop());
+    //if (xdom.state.seed = '#') {
+    //    if (responsePayload.email.indexOf('@colegiominerva.edu.mx')!=-1) {
+    //        await xdom.sources["#minerva"].fetch();
+    //    }
+    //}
 }
 
 xdom.listeners.events.add('loggedOut', function (event) {
-    xdom.session.login(undefined, undefined, location.hash.split('#').pop());
+    if (location.hash) {
+        xdom.session.login(undefined, undefined, location.hash.split('#').pop());
+    } else {
+        xdom.session.user_login = null;
+    }
+});
+
+xdom.listeners.events.add('storeLoaded', async function (event) {
+    let store = event.detail.store;
+    if (xdom.session.email) {
+        store.documentElement.setAttribute("custom:email", xdom.session.email);
+    }
 });
 
 cuestionario = {}

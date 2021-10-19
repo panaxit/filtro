@@ -4,11 +4,13 @@ xmlns="http://www.w3.org/1999/xhtml"
 xmlns:x="http://panax.io/xdom"
 xmlns:js="http://panax.io/xdom/javascript"
 xmlns:state="http://panax.io/state"
+xmlns:session="http://panax.io/session"
 xmlns:custom="http://panax.io/custom"
 exclude-result-prefixes="#default x js state custom"
 >
   <xsl:import href="xdom/resources/modal.xslt"/>
   <xsl:param name="js:secure"><![CDATA[location.protocol.indexOf('https')!=-1 || location.hostname=='localhost']]></xsl:param>
+  <xsl:param name="session:email"/>
   <xsl:template match="/">
     <span>
       <xsl:apply-templates select="*"/>
@@ -72,7 +74,7 @@ exclude-result-prefixes="#default x js state custom"
                   </xsl:if>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
                     <!--<xsl:attribute name="onclick">xdom.manifest.stores["#minerva"].fetch('#minerva'); cuestionario.closeSession()</xsl:attribute>-->
-                    <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
+                    <xsl:attribute name="onclick">xdom.session.logout({ auto_reload: false });</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
                 </xsl:when>
@@ -91,7 +93,7 @@ exclude-result-prefixes="#default x js state custom"
                   <br/>
                   <br/>
                   <button class="w-100 btn btn-primary btn-lg btn-danger" type="button">
-                    <xsl:attribute name="onclick">xdom.session.logout()</xsl:attribute>
+                    <xsl:attribute name="onclick">xdom.session.logout({ auto_reload: false });</xsl:attribute>
                     <xsl:text/>Cerrar sesión<xsl:text/>
                   </button>
                 </xsl:otherwise>
@@ -355,7 +357,7 @@ img.clickable {cursor:pointer}
             <div id="g_id_onload"
               data-client_id="22537666043-58rr4djm4s2un5p37fg3tjn56db3e5m3.apps.googleusercontent.com"
               data-callback="onGoogleLogin"
-              data-auto_prompt="true">
+              data-auto_prompt="false">
             </div>
             <div class="g_id_signin signup_button text-center"
                  data-type="standard"
@@ -399,21 +401,21 @@ img.clickable {cursor:pointer}
         </label>
       </div>
       <div class="col-2 align-self-end">
-        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
+        <input id="{@x:id}_no" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 0)">
           <xsl:if test="@state:checked=0">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
+              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked',undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
       </div>
       <div class="col-2 align-self-center">
-        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
+        <input id="{@x:id}_yes" name="{@x:id}" type="radio" class="form-check-input" required="" onclick="this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', {position()}, false); this.sourceNode.setAttribute('@state:checked', 1)">
           <xsl:if test="@state:checked=1">
             <xsl:attribute name="checked"/>
             <xsl:attribute name="onclick">
-              <xsl:text/>this.source.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
+              <xsl:text/>this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.parentNode.setAttribute('@state:active', <xsl:value-of select="position()"/>, false); this.sourceNode.setAttribute('@state:checked', undefined)<xsl:text/>
             </xsl:attribute>
           </xsl:if>
         </input>
