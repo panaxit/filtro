@@ -119,7 +119,7 @@ exclude-result-prefixes="#default"
           <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
         </xsl:if>
         <form>
-          <img class="mb-4" src="assets/{$js:tag}.png" alt="" width="72" onerror="this.src='assets/panax.png'"/>
+          <img class="mb-4" src="assets/minerva.png" alt="" width="72" onerror="this.src='assets/panax.png'"/>
           <h1 class="h3 mb-3 fw-normal">Filtro de Acceso</h1>
 
           <!--<div class="form-floating">
@@ -152,6 +152,8 @@ exclude-result-prefixes="#default"
                    data-shape="rectangular"
                    data-logo_alignment="left">
               </div>
+              <br/>
+              <kbd>Ingrese con su cuenta institucional</kbd>
             </xsl:when>
             <xsl:otherwise>
               <kbd><a style="color:white; font-size:14pt;" href="https://filtro.panax.io/">https://filtro.panax.io/</a></kbd>

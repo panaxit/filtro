@@ -6,6 +6,7 @@
 # User-specific files
 sessions/*.*
 sessions/save/*
+web.config
 qr/*
 cache/
 
