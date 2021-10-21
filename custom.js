@@ -97,6 +97,7 @@ cuestionario.load = async function () {
         xdom.fetch.xml(`${xdom.manifest.server.endpoints["request"]}?command=FiltroSalud.obtenerFormato&@Codigo=${location.search.replace(/^\?uid=/, '')}`).then(document => {
             let formato = xdom.xml.createDocument(document.selectSingleNode('x:response/formato/preguntas'));
             if (formato.documentElement) {
+                formato.selectAll("//opcion[position()>6]").remove()
                 document.getStylesheets().map(stylesheet => {
                     formato.addStylesheet(stylesheet);
                 })

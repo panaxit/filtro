@@ -454,10 +454,11 @@ img.clickable {cursor:pointer}
         <xsl:attribute name="class">carousel-item active</xsl:attribute>
         <xsl:attribute name="aria-current">true</xsl:attribute>
       </xsl:if>
+      <xsl:variable name="total_opciones" select="count(../opcion)"/>
       <div class="row flex-nowrap">
         <div class="col"></div>
         <div class="col-5 text-end">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod 9)+1}, !{(position() mod 9)}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-right: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_yes" onclick="[...document.querySelectorAll('#{@x:id}_no')].map(el => el.classList.remove('text-danger')); this.classList.toggle('text-success'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', '0'); this.sourceNode.parentNode.setAttribute('@state:active', {(position() mod $total_opciones)+1}, !{(position() mod $total_opciones)}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>
@@ -469,7 +470,7 @@ img.clickable {cursor:pointer}
           </svg>
         </div>
         <div class="col-5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod 9)+1}, true);}})" data-bs-target="#myCarousel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16" aria-hidden="true" style="margin-left: 2em; margin-top: 1em; cursor: pointer;" xo-target="{@x:id}" id="{@x:id}_no" onclick="[...document.querySelectorAll('#{@x:id}_yes')].map(el => el.classList.remove('text-success')); this.classList.toggle('text-danger'); xdom.delay(500).then(_=&gt;{{this.store.documentElement.removeAttribute('custom:code'); this.sourceNode.setAttribute('@state:checked', 1); this.sourceNode.parentNode.setAttribute('@state:active', {($active mod $total_opciones)+1}, true);}})" data-bs-target="#myCarousel">
             <xsl:if test="not(position()=last())">
               <xsl:attribute name="data-bs-slide">next</xsl:attribute>
             </xsl:if>
@@ -614,11 +615,12 @@ body {
       <div class="carousel-inner">
         <xsl:apply-templates select="opcion"/>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', eval({translate(string(($active mod 9)-1),'-0','  ')}) || 1)}})">
+      <xsl:variable name="total_opciones" select="count(opcion)"/>
+      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', eval({translate(string(($active mod $total_opciones)-1),'-0','  ')}) || 1)}})">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">No</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', {($active mod 9)+1})}})">
+      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" xo-target="{@x:id}" onclick="xdom.delay(500).then(_=&gt;{{this.sourceNode.setAttribute('@state:active', {($active mod $total_opciones)+1})}})">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Sí</span>
       </button>
